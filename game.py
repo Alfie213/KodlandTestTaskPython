@@ -1,4 +1,4 @@
-# Игровое окно на pgzero. Получает состояние с сервера и рисует котов и монетку.
+# Окно игры на pgzero: берёт состояние с сервера и рисует котов и монетку.
 # Запуск: python game.py
 import requests
 
@@ -13,21 +13,21 @@ SERVER_URL = config.get("SERVER_URL", "http://127.0.0.1:8000")
 WIDTH = GRID_COLS * CELL_SIZE
 HEIGHT = GRID_ROWS * CELL_SIZE
 
-cats = {} # имя игрока -> объект Cat
-coin_cell = [0, 0] # клетка с монеткой
+cats = {}  # имя игрока -> объект Cat
+coin_cell = [0, 0]  # клетка с монеткой
 
 # Последнее состояние с сервера и таймер опроса
 _server_state = {}
 _poll_timer = 0.0
-POLL_INTERVAL = 0.2 # как часто опрашивать сервер, секунд
+POLL_INTERVAL = 0.2  # как часто опрашивать сервер, секунд
 
 
 class Cat:
     """Кот: отрисовка, плавное перемещение по клеткам и спрайтовая анимация."""
 
-    FRAMES = 4 # кадров в анимации ходьбы
-    SPEED = 60 # пикселей в секунду (медленно)
-    ANIM_INTERVAL = 0.15 # секунд между сменой кадров
+    FRAMES = 4  # кадров в анимации ходьбы
+    SPEED = 60  # пикселей в секунду (медленно)
+    ANIM_INTERVAL = 0.15  # секунд между сменой кадров
 
     def __init__(self, name, cell_x, cell_y, facing):
         self.name = name
@@ -57,7 +57,7 @@ class Cat:
             self._step_toward_target(dt)
             self._animate(dt)
         else:
-            self.frame = 0 # стоит — кадр покоя
+            self.frame = 0  # стоит — кадр покоя
 
     def _step_toward_target(self, dt):
         step = self.SPEED * dt
@@ -153,5 +153,5 @@ def draw():
         cat.draw()
 
 
-import pgzrun # noqa: E402 (запуск pgzero как обычного скрипта)
+import pgzrun  # noqa: E402 (запуск pgzero как обычного скрипта)
 pgzrun.go()
