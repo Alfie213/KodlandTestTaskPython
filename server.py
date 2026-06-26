@@ -19,7 +19,10 @@ DELTAS = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
 
 app = Flask(__name__)
 Base = declarative_base()
-engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
+engine = create_engine(
+    f"sqlite:///{DB_PATH}",
+    connect_args={"check_same_thread": False},
+)
 Session = sessionmaker(bind=engine)
 
 
@@ -27,14 +30,14 @@ class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True) # Telegram-никнейм
-    cell_x = Column(Integer) # позиция кота на клеточном поле
+    name = Column(String, unique=True)  # Telegram-никнейм
+    cell_x = Column(Integer)  # позиция кота на клеточном поле
     cell_y = Column(Integer)
-    map_x = Column(Integer) # позиция игрока на карте (пиксели)
+    map_x = Column(Integer)  # позиция игрока на карте (пиксели)
     map_y = Column(Integer)
-    facing = Column(String, default="down") # направление взгляда
-    joined_at = Column(Float) # время добавления в игру
-    coins = Column(Integer, default=0) # количество собранных монет
+    facing = Column(String, default="down")  # направление взгляда
+    joined_at = Column(Float)  # время добавления в игру
+    coins = Column(Integer, default=0)  # количество собранных монет
 
 
 class Coin(Base):
@@ -146,7 +149,8 @@ def api_move():
 
         # Подбор монетки
         coin = session.query(Coin).first()
-        if coin and coin.cell_x == player.cell_x and coin.cell_y == player.cell_y:
+        player_cell = (player.cell_x, player.cell_y)
+        if coin and (coin.cell_x, coin.cell_y) == player_cell:
             player.coins += 1
             move_coin(session)
 
@@ -163,7 +167,9 @@ def api_state():
     try:
         players = [player_to_dict(p) for p in session.query(Player).all()]
         coin = session.query(Coin).first()
-        coin_data = {"cell_x": coin.cell_x, "cell_y": coin.cell_y} if coin else None
+        coin_data = None
+        if coin:
+            coin_data = {"cell_x": coin.cell_x, "cell_y": coin.cell_y}
         return jsonify({
             "players": players,
             "coin": coin_data,
@@ -187,7 +193,9 @@ def leaderboard():
         for p in players:
             seconds = int(now - p.joined_at)
             duration = f"{seconds // 60:02d}:{seconds % 60:02d}"
-            rows.append({"name": p.name, "duration": duration, "score": p.coins})
+            rows.append(
+                {"name": p.name, "duration": duration, "score": p.coins}
+            )
         return render_template("leaderboard.html", rows=rows)
     finally:
         session.close()

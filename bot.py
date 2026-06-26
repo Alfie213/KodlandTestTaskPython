@@ -34,7 +34,9 @@ def player_name(message):
 
 @bot.message_handler(commands=["start"])
 def handle_start(message):
-    bot.send_message(message.chat.id, "Привет! Напиши /join, чтобы зайти в игру.")
+    bot.send_message(
+        message.chat.id, "Привет! Напиши /join, чтобы зайти в игру."
+    )
 
 
 @bot.message_handler(commands=["join"])
